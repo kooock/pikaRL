@@ -4,7 +4,7 @@ import random
 import dqn
 import threading
 from collections import deque
-from envClass import env
+from env import env
 
 import gym
 
@@ -79,7 +79,6 @@ class Agent:
         reward_sum = 0
 
         while True:
-            env.render()
             a = np.argmax(mainDQN.predict(s))
             s, reward, done, _ = env.step(a)
             reward_sum += reward
@@ -101,7 +100,7 @@ class Agent:
 
         self.sess.run(copy_ops)
 
-        training_thread = threading.Thread(target=self.replay_train(), args=(copy_ops,mainDQN,targetDQN))
+        training_thread = threading.Thread(target=self.async_training, args=(copy_ops,mainDQN,targetDQN))
         training_thread.start()
 
         for episode in range(self.max_episodes):
