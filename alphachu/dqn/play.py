@@ -4,9 +4,8 @@ import random
 import dqn
 import threading
 from collections import deque
-from env import env
+from ..envClass import env
 
-import gym
 
 class Agent:
     def __init__(self):

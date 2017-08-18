@@ -1,9 +1,9 @@
 import win32con
 import win32gui
-import action
 import threading
-import MemoryRead
-import state
+from . import MemoryRead
+from . import state
+from . import action
 
 class env:
 
@@ -11,11 +11,15 @@ class env:
         0: win32con.VK_LEFT,
         1: win32con.VK_RIGHT,
         2: win32con.VK_UP,
-        3: win32con.VK_RETURN
+        3: win32con.VK_DOWN,
+        4: win32con.VK_RETURN
     }
 
-    observation_space.shape = [330,280,3]
+    observation_space.shape = [363, 463 ,3]
+
     action_space.n = 5
+
+    interval_time = 0.01
 
     #argu : 피카츄배구 윈도우창 이름 ( PIKA ) ,
     def __init__(self, pika_windowname, _score_address):
@@ -35,6 +39,8 @@ class env:
         self.isGaming = False
 
         self.isOpened = True
+
+        self.inputAction = action.action(_windowname = pika_windowname,_interval_time = self.interval_time)
 
         memmoryReadThread = threading.Thread(target=self._asyncGetScoreValue)
         pixelReadThread = threading.Thread(target=self._asyncGetScoreValue)
@@ -86,19 +92,25 @@ class env:
 
         return reward1 + reward2 + reward3
 
-    def step(self, action):
+    def step(self, _action):
 
-        #TODO self.inputAction(action)
+        self.inputAction.sendKey(_action)
 
         if self.isGaming == False:
             done = True
 
-        state = self.stateBuffer
+        _state = self.stateBuffer
         reward = self.computeReward()
 
 
-        return state, reward, done
+        return _state, reward, done
 
+    def reset(self):
+        #game reset action
+        self.inputAction.game_reset()
+
+        # var reset
+        # ???
 
     def close(self):
         self.isOpened = False
