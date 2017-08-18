@@ -36,12 +36,18 @@ class MemoryRead:
         bufferSize = len(buffer.value)
         bytesRead = ctypes.c_ulong(0)
 
+
         if self.ReadProcessMemory(self.processHandle, self.address, buffer, bufferSize, ctypes.byref(bytesRead)):
             com_score = int.from_bytes(buffer.value, byteorder='little')
             self.ReadProcessMemory(self.processHandle, self.address+0x04, buffer, bufferSize, ctypes.byref(bytesRead))
             my_scroe = int.from_bytes(buffer.value, byteorder='little')
             self.ReadProcessMemory(self.processHandle, self.address + 0x0C, buffer, bufferSize, ctypes.byref(bytesRead))
-            is_start = int.from_bytes(buffer.value, byteorder='little')
+            # 진행상태FLAG 0:(최초게임시작)공떨어지기전 1: 공떨어지기전 2:게임중 3:공이 땅에 닿임 A: 메뉴
+            flag = int.from_bytes(buffer.value, byteorder='little')
+            is_start = False
+
+            if flag == 2: #게임중일때만
+                is_start = True
 
             return com_score, my_scroe, is_start
         else:
