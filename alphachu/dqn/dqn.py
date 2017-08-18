@@ -22,20 +22,15 @@ class DQN:
                 self.conv_layer1 = tf.nn.relu(tf.nn.conv2d(self._input, filter1, strides=[1, 2, 2, 1], padding='SAME'))
                 self.pooling_layer1 = tf.nn.max_pool(self.conv_layer1, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
             print(self.conv_layer1)
-            print(self.pooling_layer1)
             with tf.name_scope(self.network_name + "_Conv_set_layer2"):
                 filter2 = tf.Variable(tf.random_normal([5, 5, 32, 64], stddev=0.01))
                 self.conv_layer2 = tf.nn.relu(tf.nn.conv2d(self.pooling_layer1, filter2, strides=[1, 2, 2, 1], padding='SAME'))
                 self.pooling_layer2 = tf.nn.max_pool(self.conv_layer2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
-            print(self.conv_layer2)
-            print(self.pooling_layer2)
             with tf.name_scope(self.network_name + "_Conv_set_layer3"):
                 filter3 = tf.Variable(tf.random_normal([5, 5, 64, 128], stddev=0.01))
                 self.conv_layer3 = tf.nn.relu(tf.nn.conv2d(self.pooling_layer2, filter3, strides=[1, 2, 2, 1], padding='SAME'))
                 self.pooling_layer3 = tf.nn.max_pool(self.conv_layer3, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='SAME')
-                seq_pooling_layer3 = tf.reshape(self.pooling_layer3,[-1,4*3*128])
-            print(self.conv_layer3)
-            print(self.pooling_layer3)
+                seq_pooling_layer3 = tf.contrib.layers.flatten(self.pooling_layer3)
 
             with tf.name_scope(self.network_name + 'FC_Layer1'):
                 FC1_W = tf.get_variable("FC1_W", shape=[4*3*128, last_layer_input_size], initializer=tf.contrib.layers.xavier_initializer())
