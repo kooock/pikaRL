@@ -1,3 +1,8 @@
+
+#TODO DELETE 'THIS FILE'
+
+'''
+
 import win32con
 import win32gui
 import threading
@@ -114,3 +119,4 @@ class env:
 
     def close(self):
         self.isOpened = False
+'''
