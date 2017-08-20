@@ -15,9 +15,9 @@ class env:
         4: win32con.VK_RETURN
     }
 
-    observation_space.shape = [463, 363 ,3]
+    pixel_shape = [463, 363 ,3]
 
-    action_space.n = 5
+    action_space_num = 5
 
     interval_time = 0.01
 
@@ -42,11 +42,11 @@ class env:
 
         self.inputAction = action.action(_windowname = pika_windowname,_interval_time = self.interval_time)
 
-        memmoryReadThread = threading.Thread(target=self._asyncGetScoreValue)
-        pixelReadThread = threading.Thread(target=self._asyncGetScoreValue)
+        self.memmoryReadThread = threading.Thread(target=self._asyncGetScoreValue)
+        self.pixelReadThread = threading.Thread(target=self._asyncGetScoreValue)
 
-        memmoryReadThread.start()
-        pixelReadThread.start()
+        self.memmoryReadThread.start()
+        self.pixelReadThread.start()
 
 
     def _asyncGetScoreValue(self):
@@ -114,3 +114,5 @@ class env:
 
     def close(self):
         self.isOpened = False
+        self.memmoryReadThread.join()
+        self.pixelReadThread.join()

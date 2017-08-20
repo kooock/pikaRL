@@ -10,6 +10,7 @@ class DQN:
         self.output_size = output_size
         self.network_name = name
         self._buildNetwork()
+        self.saver = tf.train.Saver()
 
     def _buildNetwork(self, last_layer_input_size=256, learning_rate=0.001):
         with tf.variable_scope(self.network_name):
@@ -55,8 +56,12 @@ class DQN:
         return q
 
     def update(self, input_stack, label_stack):
-        return self.session.run([self._loss, self._train], feed_dict={self._input: input_stack,
-                                                                      self._label: label_stack})
+
+        loss, _ = self.session.run([self._loss, self._train], feed_dict={self._input: input_stack,
+                                                               self._label: label_stack})
+        save_path = self.saver.save(self.session, "./save/predict_model", global_step=0)
+
+        print(loss)
 
 
 

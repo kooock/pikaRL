@@ -44,4 +44,5 @@ class state:
 
         pilim = np.array(im, dtype=np.uint8)
 
+        pilim = np.transpose(pilim,axes=(1, 0, 2))
         return pilim
