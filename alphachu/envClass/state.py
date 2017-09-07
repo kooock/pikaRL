@@ -7,6 +7,7 @@ import win32ui
 from ctypes import windll
 from PIL import Image
 import numpy as np
+from PIL import ImageGrab
 
 
 class state:
@@ -15,21 +16,22 @@ class state:
     def __init__(self, _hwnd):
         self.hwnd = _hwnd
 
-    def getstate(self):
         left, top, right, bot = win32gui.GetWindowRect(self.hwnd)
-        w = right - left
-        h = bot - top
+        self.w = right - left
+        self.h = bot - top
 
-        hwndDC = win32gui.GetWindowDC(self.hwnd)
-        mfcDC = win32ui.CreateDCFromHandle(hwndDC)
-        saveDC = mfcDC.CreateCompatibleDC()
+        self.hwndDC = win32gui.GetWindowDC(self.hwnd)
+        self.mfcDC = win32ui.CreateDCFromHandle(self.hwndDC)
+        self.saveDC = self.mfcDC.CreateCompatibleDC()
 
+    def getstate(self):
+        #saveDC = self.mfcDC.CreateCompatibleDC()
         saveBitMap = win32ui.CreateBitmap()
-        saveBitMap.CreateCompatibleBitmap(mfcDC, w, h)
+        saveBitMap.CreateCompatibleBitmap(self.mfcDC, self.w, self.h)
 
-        saveDC.SelectObject(saveBitMap)
+        self.saveDC.SelectObject(saveBitMap)
 
-        result = windll.user32.PrintWindow(self.hwnd, saveDC.GetSafeHdc(), 0)
+        #result = windll.user32.PrintWindow(self.hwnd, saveDC.GetSafeHdc(), 0)
 
         bmpinfo = saveBitMap.GetInfo()
         bmpstr = saveBitMap.GetBitmapBits(True)
@@ -43,6 +45,14 @@ class state:
         # np.set_printoptions(threshold=np.inf) #threshold 값 잘 조정하면 print로 numpy 전체 값 볼수있음
 
         pilim = np.array(im, dtype=np.uint8)
+        #win32gui.DeleteObject(saveBitMap)
+        #win32gui.DeleteDC(saveDC)
 
-        pilim = np.transpose(pilim,axes=(1, 0, 2))
+        return pilim
+
+    def getstateTest(self):
+        win32gui.SetForegroundWindow(self.hwnd)
+        bbox = win32gui.GetWindowRect(self.hwnd)
+        img = ImageGrab.grab(bbox)
+        pilim = np.array(img, dtype=np.uint8)
         return pilim

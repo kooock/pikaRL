@@ -3,9 +3,7 @@ import win32api
 import time
 import win32com.client as client
 
-'''
-작업중.............
-'''
+
 
 class action :
     wsh = client.Dispatch('WScript.Shell')
@@ -41,18 +39,20 @@ class action :
 
     def game_start(self):
         #enter 3번
-        win32api.keybd_event(self.keyMap[3], 0, 0, 0) # enter down
+        win32api.keybd_event(self.keyMap[4], 0, 0, 0) # enter down
         time.sleep(0.1)
-        win32api.keybd_event(self.keyMap[3], 0, win32con.KEYEVENTF_KEYUP, 0) # enter up
+        win32api.keybd_event(self.keyMap[4], 0, win32con.KEYEVENTF_KEYUP, 0) # enter up
         time.sleep(0.1)
-        win32api.keybd_event(self.keyMap[3], 0, 0, 0) # enter down
+        win32api.keybd_event(self.keyMap[4], 0, 0, 0) # enter down
         time.sleep(0.1)
-        win32api.keybd_event(self.keyMap[3], 0, win32con.KEYEVENTF_KEYUP, 0) # enter up
+        win32api.keybd_event(self.keyMap[4], 0, win32con.KEYEVENTF_KEYUP, 0) # enter up
         time.sleep(0.1)
-        win32api.keybd_event(self.keyMap[3], 0, 0, 0) # enter down
+        win32api.keybd_event(self.keyMap[4], 0, 0, 0)  # enter down
         time.sleep(0.1)
-        win32api.keybd_event(self.keyMap[3], 0, win32con.KEYEVENTF_KEYUP, 0) # enter up
-        time.sleep(0.1)
+        win32api.keybd_event(self.keyMap[4], 0, win32con.KEYEVENTF_KEYUP, 0)  # enter up
+        time.sleep(4)
+
+
 
     def game_reset(self):
         #게임 도중 메인화면으로이동 후 게임시작
@@ -215,6 +215,7 @@ VK_OEM_5 = 0xDC                 # Used for miscellaneous characters; it can vary
 VK_OEM_6 = 0xDD                 # Used for miscellaneous characters; it can vary by keyboard.
                                 # For the US standard keyboard, the ']}' key
 VK_OEM_7 = 0xDE                 # Used for miscellaneous characters; it can vary by keyboard.
+    
                                 # For the US standard keyboard, the 'single-quote/double-quote' key
 VK_OEM_8 = 0xDF                 # Used for miscellaneous characters; it can vary by keyboard.
 VK_OEM_102 = 0xE2               # Either the angle bracket key or the backslash key on the RT 102-key keyboard

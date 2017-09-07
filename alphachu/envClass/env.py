@@ -4,6 +4,8 @@ import threading
 from . import MemoryRead
 from . import state
 from . import action
+import random
+import time
 
 class env:
 
@@ -15,7 +17,6 @@ class env:
         4: win32con.VK_RETURN
     }
 
-    pixel_shape = [463, 363 ,3]
 
     action_space_num = 5
 
@@ -28,7 +29,8 @@ class env:
 
         self.hwnd = win32gui.FindWindowEx(0, 0, None, pika_windowname)
 
-        self.stateBuffer = 0
+        self.pixel_shape = self.checkStateShape()
+        self.stateBuffer = self.stateInit()
 
         self.comScoreBuffer = 0
         self.agentScoreBuffer = 0
@@ -38,32 +40,57 @@ class env:
 
         self.isGaming = False
 
+        self.flag = 10
+
         self.isOpened = True
+        self.isFinished = True
 
         self.inputAction = action.action(_windowname = pika_windowname,_interval_time = self.interval_time)
 
         self.memmoryReadThread = threading.Thread(target=self._asyncGetScoreValue)
-        self.pixelReadThread = threading.Thread(target=self._asyncGetScoreValue)
+        self.pixelReadThread = threading.Thread(target=self._asyncGetState)
 
         self.memmoryReadThread.start()
         self.pixelReadThread.start()
 
+
+    def checkStateShape(self):
+        stateReader = state.state(_hwnd=self.hwnd)
+        stateBuffer = stateReader.getstateTest()
+        return stateBuffer.shape
+
+    def randomAction(self):
+        randomKey = random.randint(0,4)
+        return randomKey
+
+    def stateInit(self):
+        stateReader = state.state(_hwnd=self.hwnd)
+        return stateReader.getstateTest()
 
     def _asyncGetScoreValue(self):
 
         memoryReader = MemoryRead.MemoryRead(address=self.score_address, _hwnd=self.hwnd)
 
         while self.isOpened:
-            self.comScoreBuffer, self.agentScoreBuffer, self.isGaming = memoryReader.getvalue()
+            if self.isFinished:
+                self.isGaming = False
+            else:
+                self.comScoreBuffer, self.agentScoreBuffer, self.isGaming, self.flag = memoryReader.getvalue()
+            time.sleep(0.01)
+
+
+
+
     def _asyncGetState(self):
 
         stateReader = state.state(_hwnd=self.hwnd)
 
         while self.isOpened:
             if self.isGaming:
-                self.stateBuffer = stateReader.getstate()
-            else:
-                self.stateBuffer = 0
+                self.stateBuffer = stateReader.getstateTest()
+            time.sleep(0.01)
+
+
 
     def computeReward(self):
 
@@ -76,14 +103,16 @@ class env:
 
 
         if self.isGaming:
-            reward1 = -15 * (comScoreBuffer - self.comScoreOld)
-            reward2 = 15 * (agentScoreBuffer - self.agentScoreOld)
+            reward1 = -1 * (comScoreBuffer - self.comScoreOld)
+            reward2 = 1 * (agentScoreBuffer - self.agentScoreOld)
 
             #game finish
             if self.comScoreBuffer == 15:
-                reward3 = -150
+                reward3 = -100
+                self.isFinished = True
             if self.agentScoreBuffer == 15:
-                reward3 = 150
+                reward3 = 100
+                self.isFinished = True
 
 
             self.comScoreOld = comScoreBuffer
@@ -92,23 +121,30 @@ class env:
 
         return reward1 + reward2 + reward3
 
+
+
     def step(self, _action):
 
         self.inputAction.sendKey(_action)
 
-        if self.isGaming == False:
-            done = True
+        done = not self.isGaming
+
+        info = self.flag
 
         _state = self.stateBuffer
+
         reward = self.computeReward()
 
 
-        return _state, reward, done
+
+        return _state, reward, done, info
 
     def reset(self):
         #game reset action
         self.inputAction.game_reset()
-
+        self.isFinished = False
+        state = self.stateBuffer
+        return state
         # var reset
         # ???
 
@@ -116,3 +152,5 @@ class env:
         self.isOpened = False
         self.memmoryReadThread.join()
         self.pixelReadThread.join()
+
+
