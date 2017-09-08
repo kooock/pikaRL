@@ -76,7 +76,7 @@ class Agent:
                 print("Q[0, action]")
                 print(Q[0, action])
 
-            label_array.append(self.onehot_encoding(Q[0]))
+            label_array.append(Q[0])
             input_array.append(state)
 
         input_stack = np.stack(input_array)
@@ -152,10 +152,11 @@ class Agent:
                     print("predict action : " + str(action))
                 next_state, reward, done, info = self.env.step(action)
 
-                print("action : " + str(action) + "\t reword : " + str(reward))
+                #print("action : " + str(action) + "\t reword : " + str(reward))
 
 
                 if info == 2:
+                    print("reward : "  + str(reward))
                     self.replay_buffer.append((state, action, reward, next_state, done))
 
                 if len(self.replay_buffer) > self.REPLAY_MEMORY:

@@ -1,11 +1,21 @@
-import numpy
+import numpy as np
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from envClass import env
 import time
 from PIL import Image
+import scipy.misc as ms
 
+
+
+def rgb2gray(rgb):
+    r, g, b = rgb[:, :, 0], rgb[:, :, 1], rgb[:, :, 2]
+    gray = 0.2989 * r + 0.5870 * g + 0.1140 * b
+
+    gray = np.uint8(gray)
+
+    return gray
 
 if __name__ == "__main__":
     args = sys.argv
@@ -19,14 +29,11 @@ if __name__ == "__main__":
 
     env = env.env(pika_windowname,score_address)
     env.reset()
-    time.sleep(2)
 
-    for i in range(10):
-        state, _, _ ,_ = env.step(0)
-        img = Image.fromarray(state, 'RGB')
-        img.save('C:/Users/koock/Pictures/my-' + str(i) + '.png')
+    state, _, _ ,_ = env.step(0)
+    print(np.shape(state))
 
-        time.sleep(10)
+    env.close()
 
 
 

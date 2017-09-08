@@ -30,11 +30,60 @@ class action :
     def sendKey(self, _keynum):
 
         self.wsh.AppActivate(self.windowname)
+        if _keynum < 5:
+            win32api.keybd_event( self.keyMap[_keynum] , 0, 0, 0)
+            time.sleep(self.interval_time)
+            win32api.keybd_event( self.keyMap[_keynum] , 0, win32con.KEYEVENTF_KEYUP, 0)
+            time.sleep(self.interval_time)
+            return
 
-        win32api.keybd_event( self.keyMap[_keynum] , 0, 0, 0)
-        time.sleep(self.interval_time)
-        win32api.keybd_event( self.keyMap[_keynum] , 0, win32con.KEYEVENTF_KEYUP, 0)
-        time.sleep(self.interval_time)
+        #double key
+        if _keynum == 5:
+            win32api.keybd_event(self.keyMap[0], 0, 0, 0)
+            win32api.keybd_event(self.keyMap[4], 0, 0, 0)
+            time.sleep(self.interval_time)
+            win32api.keybd_event(self.keyMap[0], 0, win32con.KEYEVENTF_KEYUP, 0)
+            win32api.keybd_event(self.keyMap[4], 0, win32con.KEYEVENTF_KEYUP, 0)
+            time.sleep(self.interval_time)
+            return
+        if _keynum == 6:
+            win32api.keybd_event(self.keyMap[2], 0, 0, 0)
+            win32api.keybd_event(self.keyMap[4], 0, 0, 0)
+            time.sleep(self.interval_time)
+            win32api.keybd_event(self.keyMap[2], 0, win32con.KEYEVENTF_KEYUP, 0)
+            win32api.keybd_event(self.keyMap[4], 0, win32con.KEYEVENTF_KEYUP, 0)
+            time.sleep(self.interval_time)
+            return
+        if _keynum == 7:
+            win32api.keybd_event(self.keyMap[3], 0, 0, 0)
+            win32api.keybd_event(self.keyMap[4], 0, 0, 0)
+            time.sleep(self.interval_time)
+            win32api.keybd_event(self.keyMap[3], 0, win32con.KEYEVENTF_KEYUP, 0)
+            win32api.keybd_event(self.keyMap[4], 0, win32con.KEYEVENTF_KEYUP, 0)
+            time.sleep(self.interval_time)
+            return
+
+        #triple key
+        if _keynum == 8:
+            win32api.keybd_event(self.keyMap[0], 0, 0, 0)
+            win32api.keybd_event(self.keyMap[2], 0, 0, 0)
+            win32api.keybd_event(self.keyMap[4], 0, 0, 0)
+            time.sleep(self.interval_time)
+            win32api.keybd_event(self.keyMap[0], 0, win32con.KEYEVENTF_KEYUP, 0)
+            win32api.keybd_event(self.keyMap[2], 0, win32con.KEYEVENTF_KEYUP, 0)
+            win32api.keybd_event(self.keyMap[4], 0, win32con.KEYEVENTF_KEYUP, 0)
+            time.sleep(self.interval_time)
+            return
+        if _keynum == 9:
+            win32api.keybd_event(self.keyMap[0], 0, 0, 0)
+            win32api.keybd_event(self.keyMap[3], 0, 0, 0)
+            win32api.keybd_event(self.keyMap[4], 0, 0, 0)
+            time.sleep(self.interval_time)
+            win32api.keybd_event(self.keyMap[0], 0, win32con.KEYEVENTF_KEYUP, 0)
+            win32api.keybd_event(self.keyMap[3], 0, win32con.KEYEVENTF_KEYUP, 0)
+            win32api.keybd_event(self.keyMap[4], 0, win32con.KEYEVENTF_KEYUP, 0)
+            time.sleep(self.interval_time)
+            return
 
 
     def game_start(self):

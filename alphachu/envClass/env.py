@@ -18,7 +18,7 @@ class env:
     }
 
 
-    action_space_num = 5
+    action_space_num = 10
 
     interval_time = 0.01
 
@@ -48,10 +48,12 @@ class env:
         self.inputAction = action.action(_windowname = pika_windowname,_interval_time = self.interval_time)
 
         self.memmoryReadThread = threading.Thread(target=self._asyncGetScoreValue)
-        self.pixelReadThread = threading.Thread(target=self._asyncGetState)
+        #self.pixelReadThread = threading.Thread(target=self._asyncGetState)
 
         self.memmoryReadThread.start()
-        self.pixelReadThread.start()
+        #self.pixelReadThread.start()
+
+        self.stateReader = state.state(_hwnd=self.hwnd)
 
 
     def checkStateShape(self):
@@ -60,7 +62,7 @@ class env:
         return stateBuffer.shape
 
     def randomAction(self):
-        randomKey = random.randint(0,4)
+        randomKey = random.randint(0,9)
         return randomKey
 
     def stateInit(self):
@@ -99,7 +101,6 @@ class env:
 
         reward1 = 0
         reward2 = 0
-        reward3 = 0
 
 
         if self.isGaming:
@@ -107,11 +108,7 @@ class env:
             reward2 = 1 * (agentScoreBuffer - self.agentScoreOld)
 
             #game finish
-            if self.comScoreBuffer == 15:
-                reward3 = -100
-                self.isFinished = True
-            if self.agentScoreBuffer == 15:
-                reward3 = 100
+            if self.comScoreBuffer == 15 or self.agentScoreBuffer == 15:
                 self.isFinished = True
 
 
@@ -119,7 +116,7 @@ class env:
             self.agentScoreOld = agentScoreBuffer
 
 
-        return reward1 + reward2 + reward3
+        return reward1 + reward2
 
 
 
@@ -127,17 +124,14 @@ class env:
 
         self.inputAction.sendKey(_action)
 
-        done = not self.isGaming
+        _state = self.stateReader.getstateTest()
 
-        info = self.flag
-
-        _state = self.stateBuffer
-
-        reward = self.computeReward()
-
-
+        done, info, reward = self.get_shared_data()
 
         return _state, reward, done, info
+
+    def get_shared_data(self):
+        return self.isGaming, self.flag, self.computeReward()
 
     def reset(self):
         #game reset action
