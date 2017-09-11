@@ -47,6 +47,14 @@ class action :
             time.sleep(self.interval_time)
             return
         if _keynum == 6:
+            win32api.keybd_event(self.keyMap[1], 0, 0, 0)
+            win32api.keybd_event(self.keyMap[4], 0, 0, 0)
+            time.sleep(self.interval_time)
+            win32api.keybd_event(self.keyMap[1], 0, win32con.KEYEVENTF_KEYUP, 0)
+            win32api.keybd_event(self.keyMap[4], 0, win32con.KEYEVENTF_KEYUP, 0)
+            time.sleep(self.interval_time)
+            return
+        if _keynum == 7:
             win32api.keybd_event(self.keyMap[2], 0, 0, 0)
             win32api.keybd_event(self.keyMap[4], 0, 0, 0)
             time.sleep(self.interval_time)
@@ -54,7 +62,7 @@ class action :
             win32api.keybd_event(self.keyMap[4], 0, win32con.KEYEVENTF_KEYUP, 0)
             time.sleep(self.interval_time)
             return
-        if _keynum == 7:
+        if _keynum == 8:
             win32api.keybd_event(self.keyMap[3], 0, 0, 0)
             win32api.keybd_event(self.keyMap[4], 0, 0, 0)
             time.sleep(self.interval_time)
@@ -64,7 +72,7 @@ class action :
             return
 
         #triple key
-        if _keynum == 8:
+        if _keynum == 9:
             win32api.keybd_event(self.keyMap[0], 0, 0, 0)
             win32api.keybd_event(self.keyMap[2], 0, 0, 0)
             win32api.keybd_event(self.keyMap[4], 0, 0, 0)
@@ -74,7 +82,7 @@ class action :
             win32api.keybd_event(self.keyMap[4], 0, win32con.KEYEVENTF_KEYUP, 0)
             time.sleep(self.interval_time)
             return
-        if _keynum == 9:
+        if _keynum == 10:
             win32api.keybd_event(self.keyMap[0], 0, 0, 0)
             win32api.keybd_event(self.keyMap[3], 0, 0, 0)
             win32api.keybd_event(self.keyMap[4], 0, 0, 0)

@@ -6,6 +6,7 @@ from . import state as st
 from . import action
 import random
 import time
+import numpy as np
 
 class env:
 
@@ -18,7 +19,7 @@ class env:
     }
 
 
-    action_space_num = 10
+    action_space_num = 11
 
     interval_time = 0.01
 
@@ -30,7 +31,7 @@ class env:
         self.hwnd = win32gui.FindWindowEx(0, 0, None, pika_windowname)
 
         self.pixel_shape = self.checkStateShape()
-        #self.stateBuffer = self.stateInit()
+        self.stateBuffer = self.stateInit()
 
         self.comScoreBuffer = 0
         self.agentScoreBuffer = 0
@@ -51,7 +52,7 @@ class env:
         self.pixelReadThread = threading.Thread(target=self._asyncGetState)
 
         self.memmoryReadThread.start()
-        #self.pixelReadThread.start()
+        self.pixelReadThread.start()
 
         self.stateReader = st.state(_hwnd=self.hwnd)
 
@@ -59,7 +60,7 @@ class env:
 
     def checkStateShape(self):
         stateReader = st.state(_hwnd=self.hwnd)
-        stateBuffer = stateReader.getstateTest()
+        stateBuffer = stateReader.getstate()
         return stateBuffer.shape
 
     def randomAction(self):
@@ -68,7 +69,7 @@ class env:
 
     def stateInit(self):
         stateReader = st.state(_hwnd=self.hwnd)
-        return stateReader.getstateTest()
+        return stateReader.getstate()
 
     def _asyncGetScoreValue(self):
 
@@ -90,7 +91,7 @@ class env:
 
         while self.isOpened:
             if self.isGaming:
-                self.stateBuffer = stateReader.getstateTest()
+                self.stateBuffer = stateReader.getstate()
             time.sleep(0.01)
 
 
@@ -123,13 +124,13 @@ class env:
 
     def step(self, _action):
 
-        self.inputAction.sendKey(_action)
+        state_list = []
 
-        _state = self.stateReader.getstateTest()
-
+        for i in range(4):
+            self.inputAction.sendKey(_action)
+            state_list.append(self.stateBuffer)
         done, info, reward = self.get_shared_data()
-
-
+        _state = np.stack(state_list,axis=2)
         return _state, reward, done, info
 
     def get_shared_data(self):
@@ -142,7 +143,7 @@ class env:
         #game reset action
         self.inputAction.game_reset()
         self.isFinished = False
-        state = st.state(_hwnd=self.hwnd).getstateTest()
+        state = st.state(_hwnd=self.hwnd).getstate()
         return state
         # var reset
         # ???

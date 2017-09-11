@@ -33,41 +33,12 @@ class state:
         self.saveDC = self.mfcDC.CreateCompatibleDC()
 
     def getstate(self):
-        #saveDC = self.mfcDC.CreateCompatibleDC()
-        saveBitMap = win32ui.CreateBitmap()
-        saveBitMap.CreateCompatibleBitmap(self.mfcDC, self.w, self.h)
-
-        self.saveDC.SelectObject(saveBitMap)
-
-        #result = windll.user32.PrintWindow(self.hwnd, saveDC.GetSafeHdc(), 0)
-
-        bmpinfo = saveBitMap.GetInfo()
-        bmpstr = saveBitMap.GetBitmapBits(True)
-
-        # RGB로 변환
-        im = Image.frombuffer(
-            'RGB',
-            (bmpinfo['bmWidth'], bmpinfo['bmHeight']),
-            bmpstr, 'raw', 'BGRX', 0, 1)
-
-        # np.set_printoptions(threshold=np.inf) #threshold 값 잘 조정하면 print로 numpy 전체 값 볼수있음
-
-        pilim = np.array(im, dtype=np.uint8)
-        #win32gui.DeleteObject(saveBitMap)
-        #win32gui.DeleteDC(saveDC)
-
-        return pilim
-
-    def getstateTest(self):
         win32gui.SetForegroundWindow(self.hwnd)
         bbox = win32gui.GetWindowRect(self.hwnd)
 
-        img_list = []
-        for i in range(4):
-            img = ImageGrab.grab(bbox)
-            img = img.resize([84,84],Image.ANTIALIAS)
-            pilim = np.array(img, dtype=np.uint8)
-            pilim = rgb2gray(pilim)
-            img_list.append(pilim)
+        img = ImageGrab.grab(bbox)
+        img = img.resize([84, 84], Image.ANTIALIAS)
+        pilim = np.array(img, dtype=np.uint8)
+        pilim = rgb2gray(pilim)
 
-        return np.stack(img_list,axis=2)
+        return pilim

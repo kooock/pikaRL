@@ -62,7 +62,7 @@ class Agent:
             else:
                 Q[0, action] = reward + self.dis * np.max(target_dqn.predict(next_state))
 
-                print("reward : " + str(reward) + "\tQ action : " +str(Q[0, action]))
+            print("reward : " + str(reward) + "\tQ [action] : " +str(Q[0, action]))
 
             label_array.append(Q[0])
             input_array.append(state)
