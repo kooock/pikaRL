@@ -28,6 +28,8 @@ class env:
 
         self.score_address = _score_address
 
+        self.stateReader = st.state(_hwnd=self.hwnd)
+
         self.hwnd = win32gui.FindWindowEx(0, 0, None, pika_windowname)
 
         self.stateInit()
@@ -58,13 +60,8 @@ class env:
         return randomKey
 
     def stateInit(self):
-        self.stateReader = st.state(_hwnd=self.hwnd)
-        state_list = []
-        for i in range(4):
-            state_list.append(self.stateReader.getstate())
-
-        self.stateBuffer =  np.stack(state_list,axis=2)
-        self.pixel_shape = self.stateBuffer.shape
+        self.stateBuffer = self.stateReader.getstate()
+        self.pixel_shape = self.reset().shape
 
     def _asyncGetScoreValue(self):
 
@@ -138,7 +135,11 @@ class env:
         #game reset action
         self.inputAction.game_reset()
         self.isFinished = False
-        state = self.stateInit()
+        state_list = []
+        for i in range(4):
+            state_list.append(self.stateBuffer)
+            time.sleep(0.1)
+        state = np.stack(state_list, axis=2)
         return state
         # var reset
         # ???
