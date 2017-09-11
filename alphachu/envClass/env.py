@@ -138,7 +138,7 @@ class env:
         #game reset action
         self.inputAction.game_reset()
         self.isFinished = False
-        state = st.state(_hwnd=self.hwnd).getstate()
+        state = self.stateInit()
         return state
         # var reset
         # ???

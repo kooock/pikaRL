@@ -28,7 +28,7 @@ class Agent:
         self.max_episodes = 2000
 
         self.dis = 0.99
-        self.REPLAY_MEMORY = 1000000
+        self.REPLAY_MEMORY = 100000
         self.TRAIN_START_MEMORY = 50000
         self.replay_buffer = deque()
         self.sess = tf.Session()
