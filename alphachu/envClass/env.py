@@ -2,7 +2,7 @@ import win32con
 import win32gui
 import threading
 from . import MemoryRead
-from . import state
+from . import state as st
 from . import action
 import random
 import time
@@ -30,7 +30,7 @@ class env:
         self.hwnd = win32gui.FindWindowEx(0, 0, None, pika_windowname)
 
         self.pixel_shape = self.checkStateShape()
-        self.stateBuffer = self.stateInit()
+        #self.stateBuffer = self.stateInit()
 
         self.comScoreBuffer = 0
         self.agentScoreBuffer = 0
@@ -48,25 +48,26 @@ class env:
         self.inputAction = action.action(_windowname = pika_windowname,_interval_time = self.interval_time)
 
         self.memmoryReadThread = threading.Thread(target=self._asyncGetScoreValue)
-        #self.pixelReadThread = threading.Thread(target=self._asyncGetState)
+        self.pixelReadThread = threading.Thread(target=self._asyncGetState)
 
         self.memmoryReadThread.start()
         #self.pixelReadThread.start()
 
-        self.stateReader = state.state(_hwnd=self.hwnd)
+        self.stateReader = st.state(_hwnd=self.hwnd)
+
 
 
     def checkStateShape(self):
-        stateReader = state.state(_hwnd=self.hwnd)
+        stateReader = st.state(_hwnd=self.hwnd)
         stateBuffer = stateReader.getstateTest()
         return stateBuffer.shape
 
     def randomAction(self):
-        randomKey = random.randint(0,9)
+        randomKey = random.randint(0,(self.action_space_num-1))
         return randomKey
 
     def stateInit(self):
-        stateReader = state.state(_hwnd=self.hwnd)
+        stateReader = st.state(_hwnd=self.hwnd)
         return stateReader.getstateTest()
 
     def _asyncGetScoreValue(self):
@@ -85,7 +86,7 @@ class env:
 
     def _asyncGetState(self):
 
-        stateReader = state.state(_hwnd=self.hwnd)
+        stateReader = st.state(_hwnd=self.hwnd)
 
         while self.isOpened:
             if self.isGaming:
@@ -128,16 +129,20 @@ class env:
 
         done, info, reward = self.get_shared_data()
 
+
         return _state, reward, done, info
 
     def get_shared_data(self):
-        return self.isGaming, self.flag, self.computeReward()
+
+        #print("self.isGaming : " + str(self.isGaming) + "\tself.flag : " + str(self.flag) + str("\tself.computeReward() : " )  + str(self.computeReward()))
+
+        return (not self.isGaming), self.flag, self.computeReward()
 
     def reset(self):
         #game reset action
         self.inputAction.game_reset()
         self.isFinished = False
-        state = self.stateBuffer
+        state = st.state(_hwnd=self.hwnd).getstateTest()
         return state
         # var reset
         # ???

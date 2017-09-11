@@ -30,8 +30,18 @@ if __name__ == "__main__":
     env = env.env(pika_windowname,score_address)
     env.reset()
 
-    state, _, _ ,_ = env.step(0)
-    print(np.shape(state))
+    for i in range(10):
+        state, _, _ ,_ = env.step(0)
+        img = Image.fromarray(state[0], 'L')
+        img.save('C:/Users/koock/Pictures/my-' + str(i) + str(0) + '.png')
+        img = Image.fromarray(state[1], 'L')
+        img.save('C:/Users/koock/Pictures/my-' + str(i) + str(1) + '.png')
+        img = Image.fromarray(state[2], 'L')
+        img.save('C:/Users/koock/Pictures/my-' + str(i) + str(2) + '.png')
+        img = Image.fromarray(state[3], 'L')
+        img.save('C:/Users/koock/Pictures/my-' + str(i) + str(3) + '.png')
+
+        time.sleep(1)
 
     env.close()
 

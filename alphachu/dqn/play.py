@@ -8,6 +8,8 @@ import signal
 import sys
 import os
 import time
+
+from PIL import Image
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from envClass import env
 
@@ -23,42 +25,33 @@ class Agent:
         self.input_channel = self.env.pixel_shape[2]
         self.output_size = self.env.action_space_num
 
-        self.max_episodes = 20000
+        self.max_episodes = 2000
 
-        self.dis = 0.9
-        self.REPLAY_MEMORY = 50000
-        self.episode = 0
+        self.dis = 0.99
+        self.REPLAY_MEMORY = 1000000
+        self.TRAIN_START_MEMORY = 50000
         self.replay_buffer = deque()
         self.sess = tf.Session()
         self.is_train = False
+        self.step = 0
 
 
     def async_training(self, copy_ops, main_dqn, target_dqn):
         print("is_train: " + str(self.is_train))
         while self.is_train:
-            if self.episode % 10 == 9:
-                print("start training")
-                for i in range(50):
-                    mini_batch = random.sample(self.replay_buffer, 128)
-                    loss= self.replay_train(main_dqn,target_dqn,mini_batch)
-                    print("training step(" + str(i) + ") => loss: " + str(loss))
-                self.sess.run(copy_ops)
-                print("finish a unit training")
+            if len(self.replay_buffer) >= self.TRAIN_START_MEMORY and self.step % 4 == 0:
+                #update fequency is 4
+                mini_batch = random.sample(self.replay_buffer, 32)
+                loss = self.replay_train(main_dqn, target_dqn, mini_batch)
+                print("loss: " + str(loss))
+                if self.step == 10000:
+                    #tartget updata frequency is 10000
+                    self.sess.run(copy_ops)
             time.sleep(0.1)
-
-    def onehot_encoding(self,arr):
-        offset = np.argmax(arr)
-        onehot_vector = [0,0,0,0,0]
-
-        onehot_vector[offset] = 1
-
-        return onehot_vector
-
 
     def replay_train(self,main_dqn,target_dqn, train_batch):
         input_array = []
         label_array = []
-
         for state, action, reward, next_state, done in train_batch:
             Q = main_dqn.predict(state)
 
@@ -69,12 +62,7 @@ class Agent:
             else:
                 Q[0, action] = reward + self.dis * np.max(target_dqn.predict(next_state))
 
-                print("reward")
-                print(reward)
-                print("np.max(target_dqn.predict(next_state))")
-                print(np.max(target_dqn.predict(next_state)))
-                print("Q[0, action]")
-                print(Q[0, action])
+                print("reward : " + str(reward) + "\tQ action : " +str(Q[0, action]))
 
             label_array.append(Q[0])
             input_array.append(state)
@@ -139,7 +127,7 @@ class Agent:
         training_thread.start()
 
         for episode in range(self.max_episodes):
-            e = ((1 - ((episode + 1)/self.max_episodes)) * 0.9)
+            e = 1./((episode /10) +1)
             done = False
             step_count = 0
             state = self.env.reset()
@@ -148,16 +136,18 @@ class Agent:
                 if np.random.rand(1) < e:
                     action = self.env.randomAction()
                 else:
-                    action = np.argmax(main_dqn.predict(state))
+                    q_predict = main_dqn.predict(state)
+                    action = np.argmax(q_predict)
+                    print("Q predict : " + str(q_predict))
                     print("predict action : " + str(action))
                 next_state, reward, done, info = self.env.step(action)
 
                 #print("action : " + str(action) + "\t reword : " + str(reward))
 
-
                 if info == 2:
-                    print("reward : "  + str(reward))
                     self.replay_buffer.append((state, action, reward, next_state, done))
+                if reward != 0:
+                    self.replay_buffer.append((state, action, reward, next_state, True))
 
                 if len(self.replay_buffer) > self.REPLAY_MEMORY:
                     self.replay_buffer.popleft()
@@ -165,12 +155,12 @@ class Agent:
                 state = next_state
 
                 step_count += 1
+                self.step += 1
 
                 if step_count > 10000:
                     break
 
             print("episode: ", episode, " steps: ", step_count)
-            self.episode = episode
             # sync training
             '''
             if episode % 10 == 1:
