@@ -30,8 +30,7 @@ class env:
 
         self.hwnd = win32gui.FindWindowEx(0, 0, None, pika_windowname)
 
-        self.pixel_shape = self.checkStateShape()
-        self.stateBuffer = self.stateInit()
+        self.stateInit()
 
         self.comScoreBuffer = 0
         self.agentScoreBuffer = 0
@@ -54,22 +53,18 @@ class env:
         self.memmoryReadThread.start()
         self.pixelReadThread.start()
 
-        self.stateReader = st.state(_hwnd=self.hwnd)
-
-
-
-    def checkStateShape(self):
-        stateReader = st.state(_hwnd=self.hwnd)
-        stateBuffer = stateReader.getstate()
-        return stateBuffer.shape
-
     def randomAction(self):
         randomKey = random.randint(0,(self.action_space_num-1))
         return randomKey
 
     def stateInit(self):
-        stateReader = st.state(_hwnd=self.hwnd)
-        return stateReader.getstate()
+        self.stateReader = st.state(_hwnd=self.hwnd)
+        state_list = []
+        for i in range(4):
+            state_list.append(self.stateReader.getstate())
+
+        self.stateBuffer =  np.stack(state_list,axis=2)
+        self.pixel_shape = self.stateBuffer.shape
 
     def _asyncGetScoreValue(self):
 

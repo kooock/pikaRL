@@ -41,7 +41,6 @@ if __name__ == "__main__":
         img = Image.fromarray(state[:,:,3], 'L')
         img.save('C:/Users/koock/Pictures/my-' + str(i) + str(3) + '.png')
 
-        time.sleep(1)
 
     env.close()
 
