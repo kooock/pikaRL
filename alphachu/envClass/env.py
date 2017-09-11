@@ -28,9 +28,12 @@ class env:
 
         self.score_address = _score_address
 
+        self.hwnd = win32gui.FindWindowEx(0, 0, None, pika_windowname)
+
+        self.inputAction = action.action(_windowname=pika_windowname, _interval_time=self.interval_time)
+
         self.stateReader = st.state(_hwnd=self.hwnd)
 
-        self.hwnd = win32gui.FindWindowEx(0, 0, None, pika_windowname)
 
         self.stateInit()
 
@@ -46,8 +49,6 @@ class env:
 
         self.isOpened = True
         self.isFinished = True
-
-        self.inputAction = action.action(_windowname = pika_windowname,_interval_time = self.interval_time)
 
         self.memmoryReadThread = threading.Thread(target=self._asyncGetScoreValue)
         self.pixelReadThread = threading.Thread(target=self._asyncGetState)
