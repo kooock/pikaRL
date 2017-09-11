@@ -146,16 +146,18 @@ class Agent:
 
                 if info == 2:
                     self.replay_buffer.append((state, action, reward, next_state, done))
-                if reward != 0:
+                    step_count += 1
+                    self.step += 1
+                elif reward != 0:
                     self.replay_buffer.append((state, action, reward, next_state, True))
+                    step_count += 1
+                    self.step += 1
 
                 if len(self.replay_buffer) > self.REPLAY_MEMORY:
                     self.replay_buffer.popleft()
 
                 state = next_state
 
-                step_count += 1
-                self.step += 1
 
                 if step_count > 10000:
                     break
