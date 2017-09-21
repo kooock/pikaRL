@@ -1,0 +1,9 @@
+\\mac\home\documents\visual studio 2017\Projects\MemoryP_Win\MemoryP_Win\bin\x64\Debug\MemoryP_Win.exe.config
+\\mac\home\documents\visual studio 2017\Projects\MemoryP_Win\MemoryP_Win\bin\x64\Debug\MemoryP_Win.exe
+\\mac\home\documents\visual studio 2017\Projects\MemoryP_Win\MemoryP_Win\bin\x64\Debug\MemoryP_Win.pdb
+\\mac\home\documents\visual studio 2017\Projects\MemoryP_Win\MemoryP_Win\obj\x64\Debug\MemoryP_Win.Form1.resources
+\\mac\home\documents\visual studio 2017\Projects\MemoryP_Win\MemoryP_Win\obj\x64\Debug\MemoryP_Win.Properties.Resources.resources
+\\mac\home\documents\visual studio 2017\Projects\MemoryP_Win\MemoryP_Win\obj\x64\Debug\MemoryP_Win.csproj.GenerateResource.Cache
+\\mac\home\documents\visual studio 2017\Projects\MemoryP_Win\MemoryP_Win\obj\x64\Debug\MemoryP_Win.exe
+\\mac\home\documents\visual studio 2017\Projects\MemoryP_Win\MemoryP_Win\obj\x64\Debug\MemoryP_Win.pdb
+\\mac\home\documents\visual studio 2017\Projects\MemoryP_Win\MemoryP_Win\obj\x64\Debug\MemoryP_Win.csprojResolveAssemblyReference.cache
